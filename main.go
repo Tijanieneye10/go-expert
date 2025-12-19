@@ -21,7 +21,7 @@ type SemiAddress struct {
 }
 
 func (u *User) GetUserStreet() string {
-	return fmt.Sprintf("%v", u.Street)
+	return fmt.Sprintf("%v", u.SemiAddress.Street)
 }
 
 func main() {
