@@ -7,12 +7,17 @@ type User struct {
 	Lastname  string
 	Age       int
 	Address
+	SemiAddress
 }
 
 type Address struct {
 	Street string
 	City   string
 	State  string
+}
+
+type SemiAddress struct {
+	Street string
 }
 
 func (u *User) GetUserStreet() string {
@@ -28,6 +33,9 @@ func main() {
 			Street: "My Street is here",
 			City:   "Tokyo",
 			State:  "Paris",
+		},
+		SemiAddress: SemiAddress{
+			Street: "second street",
 		},
 	}
 
