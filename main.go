@@ -1,44 +1,13 @@
 package main
 
-import "fmt"
-
-type User struct {
-	Firstname string
-	Lastname  string
-	Age       int
-	Address
-	SemiAddress
-}
-
-type Address struct {
-	Street string
-	City   string
-	State  string
-}
-
-type SemiAddress struct {
-	Street string
-}
-
-func (u *User) GetUserStreet() string {
-	return fmt.Sprintf("%v", u.SemiAddress.Street)
-}
+import (
+	"fmt"
+	"strings"
+)
 
 func main() {
-	user := &User{
-		Firstname: "John",
-		Lastname:  "Doe",
-		Age:       25,
-		Address: Address{
-			Street: "My Street is here",
-			City:   "Tokyo",
-			State:  "Paris",
-		},
-		SemiAddress: SemiAddress{
-			Street: "second street",
-		},
-	}
+	s1 := "John Doe"
+	s2 := strings.Clone(s1)
 
-	fmt.Println(user.GetUserStreet())
-
+	fmt.Println(s1, s2)
 }
