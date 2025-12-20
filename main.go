@@ -12,7 +12,7 @@ func main() {
 
 	s3 := strings.TrimSpace(s2)
 
-	s4 := unicode.IsDigit(rune(s3[0]))
+	s4 := unicode.IsLetter(rune(s3[0]))
 
 	fmt.Println(s4)
 
