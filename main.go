@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"unicode"
 )
 
 func main() {
@@ -11,6 +12,10 @@ func main() {
 
 	s3 := strings.TrimSpace(s2)
 
-	value := fmt.Sprintf("%+v", s3)
+	s4 := unicode.IsDigit(rune(s3[0]))
+
+	fmt.Println(s4)
+
+	value := fmt.Sprintf("%#v", s3)
 	fmt.Println(value)
 }
