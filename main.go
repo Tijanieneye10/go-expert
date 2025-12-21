@@ -45,7 +45,7 @@ func main() {
 		return
 	}
 
-	fmt.Println(colorers.Text("Hello John Doe", colorers.Green))
+	fmt.Println(colorers.Text("Hello John Doe", colorers.Green, colorers.Red))
 
 	value := fmt.Sprintf("%#v", s3)
 	fmt.Println(value)
