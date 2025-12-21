@@ -45,6 +45,10 @@ func main() {
 		return
 	}
 
+	names := []string{"John", "Doe", "foo", "bar"}
+
+	fmt.Println(strings.Join(names, "@"))
+
 	fmt.Println(colorers.Text("Hello John Doe", colorers.Green, colorers.Red))
 
 	value := fmt.Sprintf("%#v", s3)
