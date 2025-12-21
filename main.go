@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	message := make(chan string)
+	message := make(chan string) //Unbuffered channel
 
 	go func() {
 		fmt.Println("Hello World from main!")
