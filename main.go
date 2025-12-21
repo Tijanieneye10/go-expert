@@ -12,6 +12,7 @@ import (
 	2. Ensure the Add() increase equate the number of goroutine
 	3.Ensure to always decrease it by using done inside the function
 	4. Use wg.Wait()
+	5. pass the reference of wg instead of creating a copy
 */
 
 func sayHello(wg *sync.WaitGroup) {
