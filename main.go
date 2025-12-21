@@ -10,7 +10,8 @@ import (
 	* Rules
 	1. Declare the wait outside
 	2. Ensure the Add() increase equate the number of goroutine
-	3.
+	3.Ensure to always decrease it by using done inside the function
+	4. Use wg.Wait()
 */
 
 func sayHello(wg *sync.WaitGroup) {
