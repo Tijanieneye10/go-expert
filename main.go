@@ -1,56 +1,39 @@
 package main
 
 import (
-	"context"
 	"fmt"
-	"time"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
 )
 
-func ping(ctx context.Context, ch chan string) {
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case ch <- fmt.Sprintf("ping: %v", time.Now()):
-			time.Sleep(1 * time.Second)
-		}
-	}
-}
-
-func pong(ctx context.Context, ch chan string) {
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case ch <- fmt.Sprintf("pong: %v", time.Now()):
-			time.Sleep(1 * time.Second)
-		}
-	}
-}
 func main() {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 
-	pingerCh := make(chan string)
-	done := make(chan struct{})
+	url := "https://images.pexels.com/photos/14733025/pexels-photo-14733025.jpeg"
 
-	go ping(ctx, pingerCh)
-	go pong(ctx, pingerCh)
+	filePath := filepath.Base(url)
 
-	go func() {
-		timeout := time.After(5 * time.Second)
-		for {
-			select {
-			case <-timeout:
-				fmt.Println("Operation completed")
-				close(done)
-				done <- struct{}{}
-				return
-			case msg := <-pingerCh:
-				fmt.Println(msg)
-			}
-		}
-	}()
-	<-done
-	fmt.Println("Done")
+	directory := filepath.Join("./", filePath)
+
+	storeHere, err := os.Create(directory)
+
+	if err != nil {
+		panic(err)
+	}
+
+	response, err := http.Get(url)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer response.Body.Close()
+
+	_, err = io.Copy(storeHere, response.Body)
+
+	if err != nil {
+		return
+	}
+
 }
