@@ -13,4 +13,5 @@ func sayHello() {
 func main() {
 	go sayHello()
 	fmt.Println("Hello World from main!")
+	time.Sleep(3 * time.Second)
 }
