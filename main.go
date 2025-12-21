@@ -6,6 +6,13 @@ import (
 	"time"
 )
 
+/*
+	* Rules
+	1. Declare the wait outside
+	2. Ensure the Add() increase equate the number of goroutine
+	3.
+*/
+
 func sayHello(wg *sync.WaitGroup) {
 	defer wg.Done()
 	time.Sleep(2 * time.Second)
