@@ -1,0 +1,21 @@
+package concurrency
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	message := make(chan string, 3) //Buffered channel
+
+	go func() {
+		fmt.Println("Hello World from main!")
+		message <- "John Doe"
+		message <- "Jane Doe"
+	}()
+
+	time.Sleep(3 * time.Second)
+
+	fmt.Println(<-message)
+	fmt.Println(<-message)
+}
