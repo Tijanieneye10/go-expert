@@ -2,34 +2,20 @@ package main
 
 import (
 	"fmt"
-	"sync"
 	"time"
 )
 
-/*
-	* Rules
-	1. Declare the wait outside
-	2. Ensure the Add() increase equate the number of goroutine
-	3.Ensure to always decrease it by using done inside the function
-	4. Use wg.Wait()
-	5. pass the reference of wg instead of creating a copy
-*/
-
-func sayHello(wg *sync.WaitGroup) {
-	defer wg.Done()
-	time.Sleep(2 * time.Second)
-	fmt.Println("Hello World from SayHello!")
-}
-
 func main() {
-	var wg sync.WaitGroup
+	message := make(chan string)
 
-	wg.Add(3)
+	go func() {
+		fmt.Println("Hello World from main!")
+		message <- "John Doe"
+	}()
 
-	go sayHello(&wg)
-	go sayHello(&wg)
-	go sayHello(&wg)
-	fmt.Println("Hello World from main!")
+	time.Sleep(3 * time.Second)
 
-	wg.Wait()
+	msg := <-message
+
+	fmt.Println(msg)
 }
