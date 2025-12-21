@@ -9,7 +9,7 @@ import (
 )
 
 func DownloadFile(url, path string) error {
-	filename := filepath.Base(path)
+	filename := filepath.Base(url)
 	storePath := filepath.Join(path, filename)
 
 	resp, err := http.Get(url)
