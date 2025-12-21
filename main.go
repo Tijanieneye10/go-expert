@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"go-expert/colorers"
 	"html/template"
 	"os"
 	"strings"
@@ -43,6 +44,8 @@ func main() {
 	if err != nil {
 		return
 	}
+
+	fmt.Println(colorers.Text("Hello John Doe", colorers.Green))
 
 	value := fmt.Sprintf("%#v", s3)
 	fmt.Println(value)
