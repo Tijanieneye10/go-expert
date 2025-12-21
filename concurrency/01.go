@@ -5,13 +5,13 @@ import (
 	"time"
 )
 
-func sayHello() {
+func sayHello2() {
 	time.Sleep(2 * time.Second)
 	fmt.Println("Hello World from SayHello!")
 }
 
 func main() {
-	go sayHello()
+	go sayHello2()
 	fmt.Println("Hello World from main!")
 	time.Sleep(3 * time.Second)
 }
