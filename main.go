@@ -16,8 +16,6 @@ func main() {
 
 	time.Sleep(3 * time.Second)
 
-	msg := <-message
-
-	fmt.Println(msg)
-	fmt.Println(msg)
+	fmt.Println(<-message)
+	fmt.Println(<-message)
 }
