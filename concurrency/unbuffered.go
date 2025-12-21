@@ -1,4 +1,4 @@
-package main
+package concurrency
 
 import (
 	"fmt"
@@ -6,18 +6,16 @@ import (
 )
 
 func main() {
-	message := make(chan string, 3) //Buffered channel
+	message := make(chan string) //Unbuffered channel
 
 	go func() {
 		fmt.Println("Hello World from main!")
 		message <- "John Doe"
-		message <- "Jane Doe"
 	}()
 
 	time.Sleep(3 * time.Second)
 
 	msg := <-message
 
-	fmt.Println(msg)
 	fmt.Println(msg)
 }
