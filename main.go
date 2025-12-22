@@ -45,8 +45,8 @@ func main() {
 
 	multipleUrl := []string{
 		"https://images.pexels.com/photos/14733025/pexels-photo-14733025.jpeg",
-		"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPygByVCJyLXQ8IXNrEqtUrlwvDXU7Kly3hw&s",
-		"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOlOo3wFz6ukgF8w0vB8LydacAEUhmLcwIcA&s",
+		"https://hips.hearstapps.com/hmg-prod/images/dutch-colonial-house-style-66956ed4ce458.jpg",
+		"https://hips.hearstapps.com/hmg-prod/images/edc100123egan-002-6500742f5feb7.jpg",
 	}
 
 	startTime := time.Now()
