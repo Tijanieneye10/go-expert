@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -34,6 +35,37 @@ func ConcurrentDownloader(urls []string, destPath string, maxConcurrent int) {
 			defer wg.Done()
 
 			limiter <- struct{}{}
+
+			defer func() { <-limiter }()
+
+			start := time.Now()
+
+			filename := filepath.Base(url)
+			filePath := filepath.Join(destPath, filename)
+
+			storePath, err := os.Create(filePath)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			resp, err := http.Get(url)
+
+			if err != nil {
+				_ = os.Remove(filePath)
+				log.Fatal(err)
+			}
+
+			defer resp.Body.Close()
+
+			_, err = io.Copy(storePath, resp.Body)
+			if err != nil {
+				_ = os.Remove(filePath)
+				log.Fatal(err)
+				return
+			}
+
+			fmt.Printf("%s took %s\n", url, time.Since(start))
 
 		}(url)
 	}
