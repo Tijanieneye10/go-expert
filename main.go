@@ -32,6 +32,8 @@ func DownloadFile(url, path string, wg *sync.WaitGroup) error {
 		return err
 	}
 
+	defer output.Close()
+
 	_, err = io.Copy(output, resp.Body)
 	if err != nil {
 		return err
