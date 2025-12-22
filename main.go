@@ -52,7 +52,7 @@ func main() {
 		"https://hips.hearstapps.com/hmg-prod/images/edc100123egan-002-6500742f5feb7.jpg",
 	}
 
-	var wg *sync.WaitGroup
+	var wg sync.WaitGroup
 
 	startTime := time.Now()
 
@@ -66,7 +66,7 @@ func main() {
 		}
 
 		go func() {
-			err = DownloadFile(url, directoryUpload, wg)
+			err = DownloadFile(url, directoryUpload, &wg)
 			if err != nil {
 				log.Fatal(err)
 			}
