@@ -2,11 +2,43 @@ package main
 
 import (
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 )
+
+type Result struct {
+	Url      string
+	Filename string
+	Size     int64
+	Duration time.Duration
+}
+
+func ConcurrentDownloader(urls []string, destPath string, maxConcurrent int) {
+	if err := os.MkdirAll(filepath.Dir(destPath), 0777); err != nil {
+		log.Fatal(err)
+	}
+
+	results := make(chan Result)
+
+	var wg sync.WaitGroup
+
+	limiter := make(chan struct{}, maxConcurrent)
+
+	for _, url := range urls {
+		wg.Add(1)
+		go func(url string) {
+			defer wg.Done()
+
+			limiter <- struct{}{}
+
+		}(url)
+	}
+
+}
 
 func DownloadFile(url, path string, wg *sync.WaitGroup) error {
 
