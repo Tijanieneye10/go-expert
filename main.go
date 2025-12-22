@@ -24,6 +24,10 @@ func DownloadFile(url, path string, wg *sync.WaitGroup) error {
 
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		_ = os.Remove(storePath)
+	}
+
 	output, err := os.Create(storePath)
 
 	if err != nil {
