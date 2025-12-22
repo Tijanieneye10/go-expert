@@ -7,10 +7,13 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
 )
 
-func DownloadFile(url, path string) error {
+func DownloadFile(url, path string, wg *sync.WaitGroup) error {
+
+	defer wg.Done()
 	filename := filepath.Base(url)
 
 	storePath := filepath.Join(path, filename)
@@ -49,9 +52,12 @@ func main() {
 		"https://hips.hearstapps.com/hmg-prod/images/edc100123egan-002-6500742f5feb7.jpg",
 	}
 
+	var wg *sync.WaitGroup
+
 	startTime := time.Now()
 
 	for _, url := range multipleUrl {
+		wg.Add(1)
 		directoryUpload := "./upload"
 		err := os.MkdirAll(directoryUpload, os.ModePerm)
 
@@ -59,11 +65,16 @@ func main() {
 			log.Fatal(err)
 		}
 
-		err = DownloadFile(url, directoryUpload)
-		if err != nil {
-			log.Fatal(err)
-		}
+		go func() {
+			err = DownloadFile(url, directoryUpload, wg)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}()
+
 	}
+
+	wg.Wait()
 
 	fmt.Println("it took:", time.Since(startTime))
 }
