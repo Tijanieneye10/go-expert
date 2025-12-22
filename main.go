@@ -16,6 +16,7 @@ type Result struct {
 	Filename string
 	Size     int64
 	Duration time.Duration
+	Error    error
 }
 
 func ConcurrentDownloader(urls []string, destPath string, maxConcurrent int) {
@@ -46,20 +47,27 @@ func ConcurrentDownloader(urls []string, destPath string, maxConcurrent int) {
 			storePath, err := os.Create(filePath)
 
 			if err != nil {
+				results <- Result{Url: url, Error: err}
 				log.Fatal(err)
 			}
 
 			resp, err := http.Get(url)
 
 			if err != nil {
+				results <- Result{Url: url, Error: err}
 				_ = os.Remove(filePath)
 				log.Fatal(err)
 			}
 
 			defer resp.Body.Close()
 
+			if resp.StatusCode != http.StatusOK {
+				results <- Result{Url: url, Error: fmt.Errorf("bad status code: %d", resp.StatusCode)}
+			}
+
 			_, err = io.Copy(storePath, resp.Body)
 			if err != nil {
+				results <- Result{Url: url, Filename: filename, Size: 0}
 				_ = os.Remove(filePath)
 				log.Fatal(err)
 				return
