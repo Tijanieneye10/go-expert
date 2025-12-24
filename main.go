@@ -65,18 +65,24 @@ func ConcurrentDownloader(urls []string, destPath string, maxConcurrent int) {
 				results <- Result{Url: url, Error: fmt.Errorf("bad status code: %d", resp.StatusCode)}
 			}
 
-			_, err = io.Copy(storePath, resp.Body)
+			size, err := io.Copy(storePath, resp.Body)
 			if err != nil {
-				results <- Result{Url: url, Filename: filename, Size: 0}
+				results <- Result{Url: url}
 				_ = os.Remove(filePath)
 				log.Fatal(err)
 				return
 			}
 
+			results <- Result{Url: url, Filename: filename, Size: size, Duration: time.Since(start)}
 			fmt.Printf("%s took %s\n", url, time.Since(start))
 
 		}(url)
 	}
+
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
 
 }
 
@@ -120,4 +126,17 @@ func DownloadFile(url, path string, wg *sync.WaitGroup) error {
 
 func main() {
 
+	err := os.WriteFile("output.txt", []byte("Hello world, we just write to go file"), 0777)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	content, err := os.ReadFile("output.txt")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(string(content))
 }
