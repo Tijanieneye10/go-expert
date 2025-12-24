@@ -136,6 +136,7 @@ func main() {
 	}
 
 	var wg sync.WaitGroup
+	var mux sync.Mutex
 
 	response := make(chan *Store)
 
@@ -150,6 +151,10 @@ func main() {
 			limiter <- struct{}{}
 
 			defer func() { <-limiter }()
+
+			mux.Lock()
+
+			defer mux.Unlock()
 
 			filePath := filepath.Base(url)
 
