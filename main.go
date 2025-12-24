@@ -125,18 +125,41 @@ func DownloadFile(url, path string, wg *sync.WaitGroup) error {
 }
 
 func main() {
-
-	err := os.WriteFile("output.txt", []byte("Hello world, we just write to go file"), 0777)
-
-	if err != nil {
-		log.Fatal(err)
+	urls := []string{
+		"https://img.freepik.com/free-photo/laptop-with-sun-background_1232-429.jpg",
+		"https://hips.hearstapps.com/hmg-prod/images/dutch-colonial-house-style-66956274903da.jpg",
 	}
 
-	content, err := os.ReadFile("output.txt")
+	var wg sync.WaitGroup
 
-	if err != nil {
-		log.Fatal(err)
+	for _, url := range urls {
+		wg.Add(1)
+
+		go func(url string) {
+			defer wg.Done()
+
+			filePath := filepath.Base(url)
+			storeDirectory := filepath.Join("./tmp", filePath)
+
+			resp, err := http.Get(url)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			defer resp.Body.Close()
+
+			file, err := os.Create(storeDirectory)
+
+			if err != nil {
+				return
+			}
+
+			_, err = io.Copy(file, resp.Body)
+
+			if err != nil {
+				return
+			}
+		}(url)
 	}
-
-	fmt.Println(string(content))
 }
