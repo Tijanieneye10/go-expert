@@ -124,6 +124,11 @@ func DownloadFile(url, path string, wg *sync.WaitGroup) error {
 	return nil
 }
 
+type Store struct {
+	Url   string
+	Error error
+}
+
 func main() {
 	urls := []string{
 		"https://img.freepik.com/free-photo/laptop-with-sun-background_1232-429.jpg",
@@ -132,18 +137,28 @@ func main() {
 
 	var wg sync.WaitGroup
 
+	response := make(chan *Store)
+
+	limiter := make(chan struct{}, 2)
+
 	for _, url := range urls {
 		wg.Add(1)
 
 		go func(url string) {
 			defer wg.Done()
 
+			limiter <- struct{}{}
+
+			defer func() { <-limiter }()
+
 			filePath := filepath.Base(url)
-			storeDirectory := filepath.Join("./tmp", filePath)
+
+			storeDirectory := filepath.Join("./upload", filePath)
 
 			resp, err := http.Get(url)
 
 			if err != nil {
+				response <- &Store{Url: url, Error: err}
 				log.Fatal(err)
 			}
 
@@ -152,14 +167,18 @@ func main() {
 			file, err := os.Create(storeDirectory)
 
 			if err != nil {
-				return
+				response <- &Store{Url: url, Error: err}
+				log.Fatal(err)
 			}
 
 			_, err = io.Copy(file, resp.Body)
 
 			if err != nil {
-				return
+				response <- &Store{Url: url, Error: err}
+				log.Fatal(err)
 			}
 		}(url)
 	}
+
+	wg.Wait()
 }
