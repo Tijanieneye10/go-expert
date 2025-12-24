@@ -132,11 +132,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	content, err := os.ReadFile("output.txt")
+	content, err := os.Open("output.txt")
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(string(content))
+	fmt.Println(content)
 }
