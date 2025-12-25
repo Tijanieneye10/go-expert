@@ -125,9 +125,12 @@ func DownloadFile(url, path string, wg *sync.WaitGroup) error {
 }
 
 var counter int = 0
+var mu sync.Mutex
 
 func worker(wg *sync.WaitGroup) {
 	defer wg.Done()
+	mu.Lock()
+	defer mu.Unlock()
 	counter = counter + 1
 }
 
@@ -138,6 +141,7 @@ func main() {
 	for i := 0; i < 1000; i++ {
 		wg.Add(1)
 		go worker(&wg)
+
 	}
 
 	wg.Wait()
