@@ -124,66 +124,22 @@ func DownloadFile(url, path string, wg *sync.WaitGroup) error {
 	return nil
 }
 
-type Store struct {
-	Url   string
-	Error error
+var counter int = 0
+
+func worker(wg *sync.WaitGroup) {
+	defer wg.Done()
+	counter = counter + 1
 }
 
 func main() {
-	urls := []string{
-		"https://img.freepik.com/free-photo/laptop-with-sun-background_1232-429.jpg",
-		"https://hips.hearstapps.com/hmg-prod/images/dutch-colonial-house-style-66956274903da.jpg",
-	}
 
 	var wg sync.WaitGroup
-	var mux sync.Mutex
 
-	response := make(chan *Store)
-
-	limiter := make(chan struct{}, 2)
-
-	for _, url := range urls {
+	for i := 0; i < 1000; i++ {
 		wg.Add(1)
-
-		go func(url string) {
-			defer wg.Done()
-
-			limiter <- struct{}{}
-
-			defer func() { <-limiter }()
-
-			mux.Lock()
-
-			defer mux.Unlock()
-
-			filePath := filepath.Base(url)
-
-			storeDirectory := filepath.Join("./upload", filePath)
-
-			resp, err := http.Get(url)
-
-			if err != nil {
-				response <- &Store{Url: url, Error: err}
-				log.Fatal(err)
-			}
-
-			defer resp.Body.Close()
-
-			file, err := os.Create(storeDirectory)
-
-			if err != nil {
-				response <- &Store{Url: url, Error: err}
-				log.Fatal(err)
-			}
-
-			_, err = io.Copy(file, resp.Body)
-
-			if err != nil {
-				response <- &Store{Url: url, Error: err}
-				log.Fatal(err)
-			}
-		}(url)
+		go worker(&wg)
 	}
 
 	wg.Wait()
+	fmt.Println("the value of x ", counter)
 }
