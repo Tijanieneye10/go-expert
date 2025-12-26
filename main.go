@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 	"io"
 	"log"
@@ -134,16 +135,34 @@ func worker(wg *sync.WaitGroup) {
 	counter = counter + 1
 }
 
+//go:embed output.txt
+var content string
+
 func main() {
 
-	var wg sync.WaitGroup
+	fmt.Println(content)
 
-	for i := 0; i < 1000; i++ {
-		wg.Add(1)
-		go worker(&wg)
-
-	}
-
-	wg.Wait()
-	fmt.Println("the value of x ", counter)
+	//
+	//myFile, err := os.Open("./output.txt")
+	//
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//
+	//_, err = myFile.Write([]byte("Hello World\n"))
+	//
+	//if err != nil {
+	//	return
+	//}
+	//
+	//var wg sync.WaitGroup
+	//
+	//for i := 0; i < 1000; i++ {
+	//	wg.Add(1)
+	//	go worker(&wg)
+	//
+	//}
+	//
+	//wg.Wait()
+	//fmt.Println("the value of x ", counter)
 }
