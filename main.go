@@ -144,9 +144,11 @@ var public embed.FS
 
 func main() {
 
-	fmt.Println(public.ReadFile("index.html"))
+	readFile, _ := public.ReadFile("public/index.html")
 
-	fmt.Println(content)
+	print(string(readFile))
+
+	//fmt.Println(content)
 
 	//
 	//myFile, err := os.Open("./output.txt")
