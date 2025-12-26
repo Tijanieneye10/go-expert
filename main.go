@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	_ "embed"
 	"fmt"
 	"io"
@@ -138,7 +139,12 @@ func worker(wg *sync.WaitGroup) {
 //go:embed output.txt
 var content string
 
+//go:embed public
+var public embed.FS
+
 func main() {
+
+	fmt.Println(public.ReadFile("index.html"))
 
 	fmt.Println(content)
 
