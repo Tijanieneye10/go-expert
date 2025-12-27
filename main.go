@@ -143,34 +143,13 @@ var content string
 var public embed.FS
 
 func main() {
+	message := make(chan string)
 
-	readFile, _ := public.ReadFile("public/index.html")
+	go func() {
+		message <- "Hello world!"
+	}()
 
-	print(string(readFile))
+	time.Sleep(time.Second * 2)
 
-	//fmt.Println(content)
-
-	//
-	//myFile, err := os.Open("./output.txt")
-	//
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//
-	//_, err = myFile.Write([]byte("Hello World\n"))
-	//
-	//if err != nil {
-	//	return
-	//}
-	//
-	//var wg sync.WaitGroup
-	//
-	//for i := 0; i < 1000; i++ {
-	//	wg.Add(1)
-	//	go worker(&wg)
-	//
-	//}
-	//
-	//wg.Wait()
-	//fmt.Println("the value of x ", counter)
+	fmt.Println(<-message)
 }
