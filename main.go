@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"embed"
 	_ "embed"
 	"fmt"
@@ -143,13 +144,23 @@ var content string
 var public embed.FS
 
 func main() {
-	message := make(chan string)
+	db, err := sql.Open("sqlite3", "./database.db")
 
-	go func() {
-		message <- "Hello world!"
-	}()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	time.Sleep(time.Second * 2)
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(db)
 
-	fmt.Println(<-message)
+	err = db.Ping()
+	if err != nil {
+		return
+	}
+
+	fmt.Println("Connected to database")
 }
