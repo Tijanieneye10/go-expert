@@ -38,7 +38,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//fmt.Println(myUser.Username)
+	fmt.Println(myUser.Username)
 
 	passwordHashed, err := bcrypt.GenerateFromPassword([]byte("12345678"), bcrypt.DefaultCost)
 
@@ -53,7 +53,22 @@ func main() {
 		Password: string(passwordHashed),
 	}
 
-	err = AddUser(&user, db)
+	tx, err := db.Begin()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer tx.Rollback()
+
+	userId, err := AddUser(&user, tx)
+
+	err = AddProfile(userId, tx)
+	if err != nil {
+		return
+	}
+
+	err = tx.Commit()
 
 	if err != nil {
 		log.Fatal(err)
@@ -76,25 +91,25 @@ func main() {
 	fmt.Println("Connected to database")
 }
 
-func AddUser(user *User, db *sql.Tx) error {
+func AddUser(user *User, db *sql.Tx) (int64, error) {
 	stmt, err := db.Prepare("INSERT INTO users(username, email, password) values(?, ?, ?)")
 
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	defer stmt.Close()
 
-	_, err = stmt.Exec(user.Username, user.Email, user.Password)
+	data, err := stmt.Exec(user.Username, user.Email, user.Password)
 
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	return data.LastInsertId()
 }
 
-func AddProfile(userId int, tx *sql.DB) error {
+func AddProfile(userId int64, tx *sql.Tx) error {
 	stmt, err := tx.Prepare("INSERT INTO profiles(user_id, balance) values(?, ?)")
 	if err != nil {
 		return err
