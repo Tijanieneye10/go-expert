@@ -39,7 +39,7 @@ func main() {
 	//	log.Fatal(err)
 	//}
 
-	fmt.Println(myUser.Username)
+	//fmt.Println(myUser.Username)
 
 	passwordHashed, err := bcrypt.GenerateFromPassword([]byte("12345678"), bcrypt.DefaultCost)
 
