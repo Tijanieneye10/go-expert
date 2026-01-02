@@ -28,15 +28,16 @@ type Profile struct {
 func main() {
 	db, err := sql.Open("sqlite3", "database.sql")
 
+	err = createTable(db)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
-	myUser, err := GetUserByEmail("john@gmail.com", db)
-
-	if err != nil {
-		log.Fatal(err)
-	}
+	//myUser, err := GetUserByEmail("john@gmail.com", db)
+	//
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 
 	fmt.Println(myUser.Username)
 
@@ -73,8 +74,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	//createTable(db)
 
 	defer func(db *sql.DB) {
 		err := db.Close()
@@ -147,26 +146,34 @@ func GetUserByEmail(email string, db *sql.DB) (*User, error) {
 	return &user, nil
 }
 
-func createTable(db *sql.DB) {
-	smtm := `
-	CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-	password VARCHAR(250),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-CREATE TABLE IF NOT EXISTS profiles (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,  -- 1. Fixed type (match this to your users table id)
-    balance DECIMAL(15, 2) NOT NULL DEFAULT 0.00, -- 2. Fixed type for money
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE -- 3. Optional: Links to users table
-);
-`
+func createTable(db *sql.DB) error {
+	// 1. Create Users Table
+	// note: In SQLite, 'INTEGER PRIMARY KEY' automatically auto-increments.
+	queryUsers := `
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY, 
+        username TEXT NOT NULL,
+        email TEXT NOT NULL UNIQUE,
+        password TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );`
 
-	_, err := db.Exec(smtm)
-
-	if err != nil {
-		log.Fatal(err)
+	if _, err := db.Exec(queryUsers); err != nil {
+		return err
 	}
+
+	// 2. Create Profiles Table
+	queryProfiles := `
+    CREATE TABLE IF NOT EXISTS profiles (
+        id INTEGER PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        balance DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );`
+
+	if _, err := db.Exec(queryProfiles); err != nil {
+		return err
+	}
+
+	return nil
 }
