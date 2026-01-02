@@ -19,6 +19,12 @@ type User struct {
 	Created  time.Time `json:"created"`
 }
 
+type Profile struct {
+	Id      int     `json:"id"`
+	UserId  int     `json:"user_id"`
+	Balance float64 `json:"balance"`
+}
+
 func main() {
 	db, err := sql.Open("sqlite3", "database.sql")
 
@@ -32,7 +38,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(myUser.Username)
+	//fmt.Println(myUser.Username)
 
 	passwordHashed, err := bcrypt.GenerateFromPassword([]byte("12345678"), bcrypt.DefaultCost)
 
@@ -43,7 +49,7 @@ func main() {
 	user := User{
 		Id:       1,
 		Username: "john",
-		Email:    "john2@gmail.com",
+		Email:    "john10@gmail.com",
 		Password: string(passwordHashed),
 	}
 
@@ -70,7 +76,7 @@ func main() {
 	fmt.Println("Connected to database")
 }
 
-func AddUser(user *User, db *sql.DB) error {
+func AddUser(user *User, db *sql.Tx) error {
 	stmt, err := db.Prepare("INSERT INTO users(username, email, password) values(?, ?, ?)")
 
 	if err != nil {
@@ -81,6 +87,22 @@ func AddUser(user *User, db *sql.DB) error {
 
 	_, err = stmt.Exec(user.Username, user.Email, user.Password)
 
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func AddProfile(userId int, tx *sql.DB) error {
+	stmt, err := tx.Prepare("INSERT INTO profiles(user_id, balance) values(?, ?)")
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(userId, 100.00)
 	if err != nil {
 		return err
 	}
@@ -118,6 +140,12 @@ func createTable(db *sql.DB) {
     email VARCHAR(100) NOT NULL UNIQUE,
 	password VARCHAR(250),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS profiles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,  -- 1. Fixed type (match this to your users table id)
+    balance DECIMAL(15, 2) NOT NULL DEFAULT 0.00, -- 2. Fixed type for money
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE -- 3. Optional: Links to users table
 );
 `
 
