@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	_ "embed"
 	"fmt"
@@ -50,11 +51,11 @@ func main() {
 	user := User{
 		Id:       1,
 		Username: "john",
-		Email:    "john10@gmail.com",
+		Email:    "john102@gmail.com",
 		Password: string(passwordHashed),
 	}
 
-	tx, err := db.Begin()
+	tx, err := db.BeginTx(context.Background(), nil)
 
 	if err != nil {
 		log.Fatal(err)
@@ -90,8 +91,8 @@ func main() {
 	fmt.Println("Connected to database")
 }
 
-func AddUser(user *User, db *sql.Tx) (int64, error) {
-	stmt, err := db.Prepare("INSERT INTO users(username, email, password) values(?, ?, ?)")
+func AddUser(user *User, tx *sql.Tx) (int64, error) {
+	stmt, err := tx.Prepare("INSERT INTO users(username, email, password) values(?, ?, ?)")
 
 	if err != nil {
 		return 0, err
@@ -116,7 +117,7 @@ func AddProfile(userId int64, tx *sql.Tx) error {
 
 	defer stmt.Close()
 
-	_, err = stmt.Exec(userId, 100.00)
+	_, err = stmt.Exec(userId, 99.00)
 	if err != nil {
 		return err
 	}
