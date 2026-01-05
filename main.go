@@ -13,6 +13,17 @@ func main() {
 
 	if input.Scan() {
 		name := input.Text()
-		fmt.Println(name)
+
+		switch name {
+		case "John":
+			output := fmt.Sprintf("How are your? %s", name)
+			fmt.Println(output)
+		case "doe":
+			output := fmt.Sprintf("Good morning %s", name)
+			fmt.Println(output)
+		default:
+			fmt.Println("Invalid name")
+		}
+
 	}
 }
