@@ -5,6 +5,23 @@ import (
 	"net/http"
 )
 
+type DefaultHandler struct{}
+
+func (h *DefaultHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	err := json.NewEncoder(w).Encode(map[string]interface{}{
+		"message": "Hello World",
+		"data": map[string]interface{}{
+			"foo": "bar",
+		},
+	})
+
+	if err != nil {
+		return
+	}
+}
+
 func main() {
 	mux := http.NewServeMux()
 
@@ -16,7 +33,9 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 	})
 
-	err := http.ListenAndServe(":8080", mux)
+	handler := &DefaultHandler{}
+
+	err := http.ListenAndServe(":8080", handler)
 	if err != nil {
 		panic(err)
 	}
