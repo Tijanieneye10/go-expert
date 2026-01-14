@@ -1,42 +1,22 @@
 package main
 
 import (
-	"encoding/json"
+	"go-expert/upload/app"
+	"log"
 	"net/http"
+	"os"
 )
-
-type DefaultHandler struct{}
-
-func (h *DefaultHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	err := json.NewEncoder(w).Encode(map[string]interface{}{
-		"message": "Hello World",
-		"data": map[string]interface{}{
-			"foo": "bar",
-		},
-	})
-
-	if err != nil {
-		return
-	}
-}
 
 func main() {
 	mux := http.NewServeMux()
+	app := &app.App{
+		Log: log.New(os.Stdout, "", log.LstdFlags),
+	}
 
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		err := json.NewEncoder(w).Encode(map[string]string{"greet": "hello world"})
-		if err != nil {
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-	})
+	app.Serve(mux)
 
-	handler := &DefaultHandler{}
-
-	err := http.ListenAndServe(":8080", handler)
+	err := http.ListenAndServe(":8080", mux)
 	if err != nil {
-		panic(err)
+		return
 	}
 }
