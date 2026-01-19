@@ -19,7 +19,7 @@ func main() {
 func homePage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	output := fmt.Sprintf("%s", "<h1>Hello World</h1>")
-	_, err := w.Write([]byte("<h1>Hello World</h1>"))
+	_, err := w.Write([]byte(output))
 	if err != nil {
 		return
 	}
